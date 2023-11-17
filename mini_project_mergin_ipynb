@@ -1,0 +1,78 @@
+from jetbot import Robot, Camera, bgr8_to_jpeg
+import cv2
+import numpy as np
+import time
+import RPi.GPIO as GPIO
+from RGB_Lib import Programing_RGB
+
+# Pin Definitions
+BEEP_pin = 6 
+
+# GPIO Setup
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BEEP_pin, GPIO.OUT, initial=GPIO.HIGH)
+
+# RGB Setup
+RGB = Programing_RGB()
+
+# Camera Setup
+camera = Camera.instance(width=224, height=224, fps=10)
+
+# Display Setup
+image = widgets.Image(format='jpeg', width=224, height=224)
+camera_link = traitlets.dlink((camera, 'value'), (image, 'value'), transform=bgr8_to_jpeg)
+display(image)
+
+robot = Robot()
+
+lower_red = np.array([0, 100, 100])
+upper_red = np.array([10, 255, 255])
+
+# ... (이하 생략)
+
+def detect_color_circle(image):
+    # 이전 코드와 동일
+
+def detect_circle(mask, color):
+    # 이전 코드와 동일
+
+try:
+    while True:
+        time.sleep(1)
+        image = camera.value
+
+        red_detected, orange_detected, green_detected, purple_detected, blue_detected = detect_color_circle(image)
+
+        if red_detected:
+            robot.stop()
+            print("red")
+            RGB.Set_All_RGB(0xFF, 0x00, 0x00)
+            GPIO.output(BEEP_pin, GPIO.LOW)  # 경적 울리기
+            time.sleep(0.5)
+            GPIO.output(BEEP_pin, GPIO.HIGH)  # 경적 멈추기
+
+        elif orange_detected:
+            robot.backward(0.5)
+            RGB.Set_All_RGB(0xFF, 0x80, 0x00)
+            time.sleep(0.5)
+
+        elif green_detected:
+            robot.forward(0.5)
+            RGB.Set_All_RGB(0x00, 0xFF, 0x00)
+            time.sleep(0.5)
+
+        elif purple_detected:
+            robot.right(0.5)
+            RGB.Set_All_RGB(0x80, 0x00, 0x80)
+            time.sleep(0.5)
+
+        elif blue_detected:
+            robot.left(0.5)
+            RGB.Set_All_RGB(0x00, 0x00, 0xFF)
+            time.sleep(0.5)
+
+except KeyboardInterrupt:
+    pass
+finally:
+    GPIO.cleanup()
+    robot.stop()
