@@ -1,4 +1,4 @@
 class DatasetConfig():
     TASK = 'sign'
-    CATEGORIES = ['like', 'dislike', 'stop']
-    DATASETS = ['A', 'B', 'C']
+    CATEGORIES = ['green','orange','dislike', 'stop']
+    DATASETS = ['A', 'B', 'C','D']
